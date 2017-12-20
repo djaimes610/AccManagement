@@ -1,0 +1,49 @@
+﻿@model DocumentApp.Models.UsuarioLoginViewModel
+@using (Html.BeginForm("LogOff", "Login", FormMethod.Post, new { id = "logoutForm" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+            <!-- User Account: style can be found in dropdown.less -->
+            <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    @if (Model.idRol == 1)
+                    {
+                        <img src="~/images/admin-icon-profile-small.png" class="user-image" alt="User Image">
+                    }
+                    else
+                    {
+                        <img src="~/images/user-icon-profile-small.png" class="user-image" alt="User Image">
+                    }
+                    <!--<img src="~/images/per_User.png" class="user-image" alt="User Image">-->
+                    <span class="hidden-xs">@Model.PrimerNombreApellido</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <!-- User image -->
+                    <li class="user-header">
+                        @if (Model.idRol == 1){
+                            <img src="~/images/admin-icon-profile.png" class="img-circle" alt="User Image">
+                        }
+                        else{
+                            <img src="~/images/user-icon-profile.png" class="img-circle" alt="User Image">
+                        }
+                        <!--<img src="~/images/per_User.png" class="img-circle" alt="User Image">-->
+                        <p>
+                            <small>
+                                @Model.NombreCompleto <br />
+                                @Model.nombreArea
+                            </small>
+                            <small>Email: @Model.Correo</small>
+                        </p>
+                    </li>
+                    <!-- Menu Footer-->
+                    <li class="user-footer">
+                        <div class="pull-right">
+                            <a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-default btn-flat btn-sm"><span class="fa fa-sign-out fa-lg"></span> Cerrar Sesi&oacute;n</a>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+}

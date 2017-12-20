@@ -1,0 +1,585 @@
+﻿@model DocumentApp.Models.UsuarioViewModel
+
+@*@model DocumentApp.Models.UsuarioViewModel*@
+
+@{
+    ViewBag.Title = "ConsultaUsuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<p></p>
+<br />
+
+<div class="box box-default">
+    <div class="box-header with-border">
+        <h3 class="box-title">Consulta de Usuarios</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+        </div>
+    </div>
+    <div>
+        <button type="button" id="btnRegistroUsuario" class="btn btn-primary">Registrar Usuario</button>
+    </div>
+    <div class="box">
+        <div class="box-header with-border">
+            <h5 class="modal-title text-bold">Lista de Usuarios</h5>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+
+            <table id="userTable" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Usuario</th>
+                    <th>Nombres Completos</th>
+                    <th>Correo</th>
+                    <th>Area</th>
+                    <th>Rol</th>
+                    <th>Usuario Ingreso</th>
+                    <th>Fecha Ingreso</th>
+
+                    <th style="width: 40px">Acci&oacute;n</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (Model.Items.Any())
+                {
+                    foreach (var item in Model.Items)
+                    {
+                        <tr class="text small">
+                            <td style="width: 10px">
+                                @Html.DisplayFor(modelItem => item.Nro)
+                            </td>
+                            <td style="width: 10px">
+                                @Html.DisplayFor(modelItem => item.CodigoUsuario)
+                            </td>
+                            <td style="width: 10px">
+                                @Html.DisplayFor(modelItem => item.NombreCompleto)
+                            </td>
+                            <td style="width: 10px">
+                                @Html.DisplayFor(modelItem => item.Correo)
+                            </td>
+                            <td style="width: 10px">
+                                @Html.DisplayFor(modelItem => item.Area)
+                            </td>
+                            <td style="width: 10px">
+                                @Html.DisplayFor(modelItem => item.Rol)
+                            </td>
+                            <td style="width: 10px">
+                                @Html.DisplayFor(modelItem => item.UsuarioIngreso)
+                            </td>
+                            <td style="width: 10px">
+                                @Html.DisplayFor(modelItem => item.FechaIngreso)
+                            </td>
+                            <td style="width: 160px">
+                                <div id="divbotonesAccionGrid" class="text-center btn-group-xs">
+                                    <a class="btn btn-success" href="javascript:void(0);" onclick="jsAsignarelement('@item.CodigoUsuario');">
+                                        <span class="glyphicon glyphicon-eye-open"></span>  Asignar Perfil
+                                    </a>                                    
+                                    <a class="btn btn-primary btn-flat" href="javascript:void(0);" onclick="jsEdicionelement('@item.CodigoUsuario', '@item.CodigoArea', '@item.CodigoRol', '@item.ApellidoMaterno', '@item.ApellidoPaterno', '@item.Nombres', '@item.Correo');">
+                                        <span class="fa fa-edit fa-lg"></span>  Editar
+                                    </a>
+                                    <a class="btn btn-danger btn-flat" href="javascript:void(0);" onclick="jsDeletelement('@item.CodigoUsuario');">
+                                        <span class="fa fa-trash-o fa-lg"></span>  Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="text small text-info">No se encontraron usuarios registrados&hellip;</td>
+                    </tr>
+                }
+
+                </tbody>
+            </table>
+
+            <!-- pager -->
+
+            @if (Model.Pager.EndPage > 1)
+            {
+                <ul class="pagination">
+                    @if (Model.Pager.CurrentPage > 1)
+                    {
+                        <li>
+                            <a href="~/Usuario/ConsultaUsuario">First</a>
+                        </li>
+                            <li>
+                                <a href="~/Usuario/ConsultaUsuario?page=@(Model.Pager.CurrentPage - 1)">Previous</a>
+                            </li>
+                    }
+
+                    @for (var page = Model.Pager.StartPage; page <= Model.Pager.EndPage; page++)
+                    {
+                        <li class="@(page == Model.Pager.CurrentPage ? "active" : "")">
+                            <a href="~/Usuario/ConsultaUsuario?page=@page">@page</a>
+                        </li>
+                    }
+
+                    @if (Model.Pager.CurrentPage < Model.Pager.TotalPages)
+                    {
+                        <li>
+                            <a href="~/Usuario/ConsultaUsuario?page=@(Model.Pager.CurrentPage + 1)">Next</a>
+                        </li>
+                            <li>
+                                <a href="~/Usuario/ConsultaUsuario?page=@(Model.Pager.TotalPages)">Last</a>
+                            </li>
+                    }
+                </ul> 
+            }		
+        </div>
+
+
+    </div><!-- /.box -->
+</div>
+
+<!--MODAL.ASIGNAR PERFIL-->
+<div id="myModalAsignarPerfil" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close"><span>&times;</span></button>
+                <div class="modal-title"> Asignar perfiles al usuario</div>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+
+                    <div class="form-group input-group col-xs-3">
+                        <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+                        <select id="selperfil" name="codperfil" class="form-control select2 col-md-4" data-placeholder="Seleccione el perfil..."></select>
+                        <button type="button" id="btnAddPerfil" class="btn btn-primary col-md-4">Agregar</button>
+                    </div>
+                    <div>
+                        
+                    </div>
+
+                        <table id="AsignadoTable" class="table-bordered table-hover table-condensed col-md-5">
+                            <thead>
+                                <tr class="bg-blue text small">
+                                    <th class="col-md-1">#</th>
+                                    <th class="col-md-2">Perfil</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" class="text small text-info">No se encontraron perfiles asignados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnAsignarPerfil" class="btn btn-primary" data-dismiss="modal">Grabar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--MODAL.AGREGAR-USUARIO-->
+<div id="myModalAddUsuario" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-blue-gradient">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-user" aria-hidden="true"></i> Registro de Usuario</h5>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
+                    <input id="txtNombreUsuario" type="text" class="form-control" placeholder="Agregar Nuevo Usuario"/>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtApePaterno" type="text" class="form-control" placeholder="Apellido Paterno" />
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtApeMaterno" type="text" class="form-control" placeholder="Apellido Materno" />
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtNombres" type="text" class="form-control" placeholder="Nombres" />
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtCorreo" type="text" class="form-control" placeholder="Correo" />
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+                    <select id="selarea" name="codarea" class="form-control select2" data-placeholder="Seleccione el area..."></select>
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+                    <select id="selrol" name="codrol" class="form-control select2" data-placeholder="Seleccione el rol..."></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnSaveUsuario" class="btn btn-primary" data-dismiss="modal">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--MODAL.EDITAR-USUARIO-->
+<div id="myModalEditUsuario" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-blue-gradient">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-user" aria-hidden="true"></i> Editar Usuario</h5>
+            </div>
+            <div class="modal-body">
+                <div id="idusuario" hidden></div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtEditUsuario" type="text" class="form-control; disabled" placeholder="Usuario"/>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtEditApePaterno" type="text" class="form-control" placeholder="Apellido Paterno"/>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtEditApeMaterno" type="text" class="form-control" placeholder="Apellido Materno"/>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtEditNombres" type="text" class="form-control" placeholder="Nombres"/>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtEditCorreo" type="text" class="form-control" placeholder="Correo" />
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+                    <select id="selupdarea" name="codarea" class="form-control select2" data-placeholder="Seleccione el area..."></select>
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+                    <select id="selupdrol" name="codrol" class="form-control select2" data-placeholder="Seleccione el rol..."></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnUpdateUsuario" class="btn btn-primary" data-dismiss="modal">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--MODAL.ELIMINAR-USUARIO-->
+<div id="myModalDeleteUsuario" class="modal fade">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-red-active">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-trash" aria-hidden="true"></i> Alerta!</h5>
+            </div>
+            <div class="modal-body text-center">
+                ¿Esta Seguro de eliminar el usuario?
+                <br />
+                <div id="tdelmsg"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnDeletePropOK" class="btn btn-primary" data-dismiss="modal">Eliminar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+
+<script type="text/javascript">
+
+    @*function fnMostrarUsuarios() {
+        var url = '@Url.Action("GetAllUsuarios", "Usuario")';
+
+        var defaultData;
+
+        $.getJSON(url,
+            function(data) {
+
+                $('#userTable').find('tbody').children().remove();
+
+                $.each(data,
+                    function(i, item) {
+
+                        $('#userTable')
+                            .find('tbody')
+                            .append('<tr><td>' +
+                                item.Nro +
+                                '</td><td>' +
+                                item.CodigoUsuario +
+                                '</td><td>' +
+                                item.Area +
+                                '</td><td>' +
+                                item.Rol +
+                                '</td><td>' +
+                                item.Estado +
+                                '</td><td>' +
+                                item.UsuarioIngreso +
+                                '</td><td>' +
+                                item.FechaIngreso +
+                                '</td><td><a class="btn btn-success" data-toggle="modal" data-target=".bootstrapmodal">' +
+                                '<span class="glyphicon glyphicon-eye-open"></span> Asignar Perfil</a></td></tr>');
+
+                    });
+
+            });
+    };*@
+
+    getAllAreas('selupdarea');
+    getAllRoles('selupdrol');
+    getAllAreas('selarea');
+    getAllRoles('selrol');
+
+    $("#btnRegistroUsuario").click(function () {
+        $("#txtNombreUsuario").val("");
+        $("#txtApePaterno").val("");
+        $("#txtApeMaterno").val("");
+        $("#txtNombres").val("");
+        $("#txtCorreo").val("");
+        $('#myModalAddUsuario').modal('show');
+        $('#myModalAddUsuario').on('shown.bs.modal', function () {
+            $("#txtNombreUsuario").focus();
+        });
+    });
+
+    function fnMostrarPerfilesAsignados(id) {
+
+        var url = '@Url.Action("GetPerfilesAsignadosUsuarios", "Usuario",new RouteValueDictionary (new { id="id"}))'
+            .replace("id", id);
+        var size;
+
+        $.getJSON(url,
+            function(data) {
+                $.ajaxSetup({ cache: false });
+                $('#asignadoTable').find('tbody').children().remove();
+                size = Object.keys(data).length;
+
+                if (size > 0) {
+                    $.each(data,
+                        function(i, item) {
+                            $('#asignadoTable')
+                                .find('tbody')
+                                .append('<tr><td class="text small col-md-1">' +
+                                    item.Id +
+                                    '</td><td class="text small col-md-2">' +
+                                    item.Descripcion +
+                                    '</td></tr>');
+                        });
+                } else {
+                    $('#asignadoTable')
+                        .find('tbody')
+                        .append('<tr><td colspan="2" class="text small text-info">No se encontraron perfiles asignados</td></tr>');
+                }
+
+
+            });
+
+
+    };
+
+    function fnListaPerfilesSinAsignar(id) {
+        //alert(id);
+        var url = '@Url.Action("GetPerfilesSinAsignar", "Usuario",new RouteValueDictionary (new { id="id"}))'
+            .replace("id", id);
+        var size;
+
+        $('#selperfil').empty();
+
+        $.getJSON(url,
+            function (data) {
+                size = Object.keys(data).length;
+                if (size > 0) {
+                    $.each(data,
+                        function (i, item) {
+                            //alert(item.descripcion);
+                            $('#selperfil')
+                                .append($("<option></option>")
+                                    .attr("value", item.Id)
+                                    .text(item.Descripcion));
+                        });
+                } else {
+                    $('#selperfil').removeClass('form-control select2');
+                    $('#selperfil').addClass('form-control select2 text-red');
+                    $('#selperfil')
+                        .append($("<option></option>")
+                            .attr("value", 0)
+                            .text("No existen perfiles disponibles"));
+                }
+            });
+
+
+    };
+
+    function jsEdicionelement(codigoUsuario, codigoArea, codigoRol, apellidoMaterno, apellidoPaterno, nombres, correo) {
+        //alert(codUsuario + codArea);
+        $('#idusuario').text(codigoUsuario);
+        $('#txtEditUsuario').val(codigoUsuario);
+        $('#txtEditApeMaterno').val(apellidoMaterno);
+        $('#txtEditApePaterno').val(apellidoPaterno);
+        $('#txtEditNombres').val(nombres);
+        $('#txtEditCorreo').val(correo);
+        $('#myModalEditUsuario').modal('show');
+        $('#myModalEditUsuario')
+            .on('shown.bs.modal',
+                function () {
+                    $("#txtEditApeMaterno").focus();
+                    //$('select[name^="selupdarea"] option[value=result[2]]').attr("selected", "selected");
+                    
+                });
+
+        //$('#selupdarea .selected').attr('id', codigoArea);
+
+        //$('#selupdarea option[value=result['+codigoArea+']').attr("selected", "selected");
+        //$('#selupdrol option[value=result['+codigoRol+']').attr("selected", "selected");
+
+    };
+
+    function jsDeletelement(id) {
+        idUsuario = id;
+        $('#tdelmsg').text(id);
+        $('#myModalDeleteUsuario').modal('show');
+    };
+
+    function jsAsignarelement(id) {
+        //fnMostrarPerfilesAsignados(id);
+        fnListaPerfilesSinAsignar(id);
+        $('#myModalAsignarPerfil').modal('show');
+        $('#myModalAsignarPerfil').on('shown.bs.modal', function () {
+            $(this).find('.modal-body').css({
+                'max-height':'100%'
+            });
+        });
+    };
+
+    $("#btnSaveUsuario").click(function () {
+
+        var codigo = $('#idusuario').text();
+        var glsUsuario = document.getElementById("txtNombreUsuario").value;
+        var glsApellidoPaterno = document.getElementById("txtApePaterno").value;
+        var glsApellidoMaterno = document.getElementById("txtApeMaterno").value;
+        var glsNombres = document.getElementById("txtNombres").value;
+        var glsCorreo = document.getElementById("txtCorreo").value;
+        var codArea = $('#selarea').find("option:selected").value();
+        var codRol = $('#selrol').find("option:selected").value();
+        var url = '@Url.Action("Registrar", "Usuario")';
+
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            url: url,
+            data: '{"code":"' + codigo + '","glsUsuario":"' + glsUsuario + '","glsApellidoPaterno":"' + glsApellidoPaterno +
+                        '","glsApellidoMaterno":"' + glsApellidoMaterno + '","glsNombres":"' + glsNombres + '","glsCorreo":"' + glsCorreo +
+                        ',"codArea":"' + codArea + ',"codRol":"' + codRol + '"}',
+            datatype: 'json',
+            success: function (result) {
+                //si registro correctamente recargamos la grilla
+                location.reload();
+            },
+            error: function (xhr) {
+                alert('Error: ' + xhr.statusText);
+            }
+        });
+    });
+
+    $("#btnUpdateUsuario").click(function() {
+
+            var codigo = $('#idusuario').text();
+            var glsUsuario = document.getElementById("txtEditUsuario").value;
+            var glsApellidoPaterno = document.getElementById("txtEditApePaterno").value;
+            var glsApellidoMaterno = document.getElementById("txtEditApeMaterno").value;
+            var glsNombres = document.getElementById("txtEditNombres").value;
+            var glsCorreo = document.getElementById("txtEditCorreo").value;
+            var codArea = $('#selupdarea').find("option:selected").value();
+            var codRol = $('#selupdrol').find("option:selected").value();
+            var url = '@Url.Action("Actualizar", "Usuario")';
+
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                url: url,
+                data: '{"code":"' + codigo + '","glsUsuario":"' + glsUsuario + '","glsApellidoPaterno":"' + glsApellidoPaterno +
+                        '","glsApellidoMaterno":"' + glsApellidoMaterno + '","glsNombres":"' + glsNombres + '","glsCorreo":"' + glsCorreo +
+                        ',"codArea":"' + codArea + ',"codRol":"' + codRol + '"}',
+                datatype: 'json',
+                success: function(result) {
+                    //si registro correctamente recargamos la grilla
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.statusText);
+                } 
+            });
+        });
+
+    $("#btnSaveUsuario").click(function () {
+
+
+    });
+    function getAllAreas(obj) {
+        var url = '@Url.Action("GetAllAreas", "Usuario")';
+        var size;
+
+        $('#' + obj).empty();
+
+        $.getJSON(url,
+            function(data) {
+                size = Object.keys(data).length;
+                if (size > 0) {
+                    $.each(data,
+                        function(i, item) {
+                            $('#' + obj)
+                                .append($("<option></option>")
+                                    .attr("value", item.codigo)
+                                    .text(item.descripcion));
+                        });
+                } else {
+                    $('#' + obj).removeClass('form-control select2');
+                    $('#' + obj).addClass('form-control select2 text-red');
+                    $('#' + obj)
+                        .append($("<option></option>")
+                            .attr("value", 0)
+                            .text("No se han registrado las areas"));
+                }
+            });
+    };
+
+    function getAllRoles(obj) {
+        var url = '@Url.Action("GetAllRoles", "Usuario")';
+            var size;
+
+            $('#'+obj).empty();
+
+            $.getJSON(url,
+                function(data) {
+                    size = Object.keys(data).length;
+                    if (size > 0) {
+                        $.each(data,
+                            function(i, item) {
+                                $('#' + obj)
+                                    .append($("<option></option>")
+                                        .attr("value", item.codigo)
+                                        .text(item.descripcion));
+                            });
+                    } else {
+                        $('#' + obj).removeClass('form-control select2');
+                        $('#' + obj).addClass('form-control select2 text-red');
+                        $('#' + obj)
+                            .append($("<option></option>")
+                                .attr("value", 0)
+                                .text("No se han registrado las areas"));
+                    }
+                });
+    };
+</script>
+
+
+<h2>ConsultaUsuario</h2>

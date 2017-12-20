@@ -1,0 +1,68 @@
+﻿@model DocumentApp.Models.UsuarioLoginViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/admin-lte/css/AdminLTE.min.css" rel="stylesheet" />
+    <script src="~/scripts/jquery-2.2.3.min.js"></script>
+    <script src="~/scripts/bootstrap.min.js"></script>
+
+    <title>Login | Gestion de Documentos</title>
+
+</head>
+<body class="hold-transition lockscreen">
+    <div class="lockscreen-wrapper">
+        <div class="lockscreen-logo">
+            <a href="#"><b>Cuentas por pagar</b></a>
+        </div>
+        <!--Datos del Usuario-->
+        <div class="lockscreen-name">@Model.PrimerNombreApellido</div>
+        <div class="lockscreen-item">
+            <div class="lockscreen-image">
+                @if (Model.idRol == 1)
+                {
+                    <img src="~/images/admin-icon-profile.png" alt="User Image">
+                }
+                else
+                {
+                    <img src="~/images/user-icon-profile.png" alt="User Image">
+                }
+                <!--<img src="~/images/per_User.png" alt="User Image">-->
+            </div>
+
+            <!--Inicio Formulario Ingreso-->
+            @using (Html.BeginForm("Ingresar", "Login", new { @class = "lockscreen-credentials" }))
+            {
+                <div class="input-group">
+                    <!--<input type="password" class="form-control" placeholder="password" />-->
+                    <button class="form-control btn btn-block"><small class="text-center text-black"><i>Ingresar a mi cuenta&hellip;</i></small></button>
+                    <div class="input-group-btn">
+                        <button class="btn"><i class="fa fa-arrow-right text-muted"></i></button>
+                    </div>
+                </div>
+            }
+            <!--Final Formulario Ingreso-->
+
+        </div>
+
+        <div class="text-center">
+            <a href="@Url.Action("Login","Login")">o Iniciar con una cuenta diferente</a>
+        </div>
+
+        <div class="lockscreen-footer text-center">
+            Copyright &copy; @DateTime.Now.Year <b><a href="#" class="text-black">Super Mercados Peruanos</a></b><br>
+            Todos Los Derechos Reservados
+        </div>
+
+    </div>
+</body>
+</html>

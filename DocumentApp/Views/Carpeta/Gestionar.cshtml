@@ -1,0 +1,652 @@
+﻿
+@{
+    ViewBag.Title = "Gestionar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/bootstrap-treeview.css" rel="stylesheet" />
+<script src="~/scripts/bootstrap-treeview.js"></script>
+<script src="~/scripts/bootstrap-filestyle.min.js"></script>
+<script src="~/scripts/moment.min.js"></script>
+<script src="~/scripts/bootstrap-datetimepicker.min.js"></script>
+
+<p></p>
+<br />
+
+<div class="box box-default">
+    <div class="box-header with-border">
+        <h3 class="box-title">Gesti&oacute;n de carpetas generadas</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+        </div>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-4 text small">
+                <div id="treeview5" class=""></div>
+            </div>
+            <!-- right column -->
+            <div class="col-md-8">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h5 id="titlecarpeta" class="modal-title text-bold">Documentos Publicados</h5>
+                        <div id="idcarpeta" hidden></div>
+                    </div><!-- /.box-header -->
+
+                    <div class="box-body">
+                        <div id="divbotonesAccion" class="text-center btn-group-sm hide">
+                            <a id="btndeletefile" class="btn btn-danger" href="#">
+                                <span class="fa fa-trash-o fa-lg"></span>  Eliminar Carpeta
+                            </a>
+                            <a id="btnAddFolder" class="btn btn-default" href="#">
+                                <span class="fa fa-folder-open fa-lg"></span>  Nueva Carpeta
+                            </a>
+                            <a id="btnEditFolder" class="btn btn-default" href="#">
+                                <span class="fa fa-edit fa-lg"></span>  Editar Carpeta
+                            </a>
+                            <a id="btnUploadFile" class="btn btn-default" href="#">
+                                <span class="fa fa-upload fa-lg"></span>  Subir Documento
+                            </a>
+                        </div>
+                        <br />
+
+                        <table id="mitabla" class="table table-bordered table-hover">
+                            <thead>
+                                <tr class="bg-blue text small">
+                                    <th style="width: 10px">#</th>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th style="width: 40px">Acci&oacute;n</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="text small text-info">No se encontraron documentos para la selecci&oacute;n actual</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="resultTarget"></div>
+                    </div>
+                </div><!-- /.box -->
+            </div>
+        </div>
+    </div>
+    <div class="box-footer">
+        Para administrar <a href="#">carpetas</a> utilice las opciones del menu.
+    </div>
+</div>
+
+<!--INI.Modal-->
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title">Modal title</h5>
+            </div>
+            <div class="modal-body">
+                <!-- Custom Tabs (Pulled to the right) -->
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs pull-right">
+                        <li class="active"><a href="#tab_1-1" data-toggle="tab">Cargar Documento</a></li>
+                        <li><a href="#tab_2-2" data-toggle="tab">Agregar Carpeta</a></li>
+                        <li id="tab_name"><a href="#tab_3-2" data-toggle="tab">Actualizar Nombre</a></li>
+                        <li class="pull-left header"><i class="fa fa-cogs"></i> Opciones</li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1-1">
+                            <b>Cargar nuevo documento:</b>
+                            <p>
+                                Para realizar la carga de un nuevo documento a esta carpeta, deber&aacute; Elegir el archivo.
+                            </p>
+                            <input type="file" class="filestyle" data-placeholder="Seleccione el documento..." data-size="sm" data-iconName="fa fa-upload" data-buttonText="Elegir Archivo">
+                        <br />
+                        </div><!-- /.tab-pane -->
+                        <div class="tab-pane" id="tab_2-2">
+                            <p>Bloque para Agregar Nueva carpeta</p>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-folder"></i></span>
+                                <input type="text" class="form-control" placeholder="Agregar Nueva Carpeta">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-info btn-flat" type="button">Agregar!</button>
+                                </span>
+                            </div>
+                        </div><!-- /.tab-pane -->
+                        <div class="tab-pane" id="tab_3-2">
+                            <p>Bloque para actualizar el nombre del documento</p>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+                                <input type="text" class="form-control" placeholder="Actualizar Nombre de Carpeta">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-info btn-flat" type="button">Actualizar!</button>
+                                </span>
+                            </div>
+                        </div><!-- /.tab-pane -->
+                    </div><!-- /.tab-content -->
+                </div><!-- nav-tabs-custom -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Listo</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!--FIN.Modal-->
+
+<!--MODAL.DELETE-->
+<div id="myModalDelete" class="modal fade">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-red-active">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-trash" aria-hidden="true"></i> Alerta!</h5>
+            </div>
+            <div class="modal-body text-center">
+                ¿Esta Seguro de eliminar esta carpeta?
+                <br />
+                <div id="tmessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnDeleteFolderOK" class="btn btn-primary" data-dismiss="modal">Eliminar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<!--MODAL.AGREGAR-CARPETA-->
+<div id="myModalAddFolder" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-blue-gradient">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-check-circle" aria-hidden="true"></i> Ingrese el nombre de la nueva carpeta</h5>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-folder"></i></span>
+                    <input id="txtCarpetanombre" type="text" class="form-control" placeholder="Agregar Nueva Carpeta" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnSaveFolder" class="btn btn-primary" data-dismiss="modal">Guardar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<!--MODAL.EDITAR-CARPETA-->
+<div id="myModalEditFolder" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light-blue-gradient">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-check-circle" aria-hidden="true"></i> Editar Nombre de Carpeta</h5>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtEditCarpetanombre" type="text" class="form-control" placeholder="Editar Carpeta" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnUpdateEditFolder" class="btn btn-primary" data-dismiss="modal">Actualizar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<!--MODAL.SUBIR-ARCHIVO-->
+<div id="myModalUploadFile" class="modal fade">
+    <div class="modal-dialog">
+        <!--<div class="modal-content">-->
+    <!--using (Html.BeginForm("Subir", "Carpeta", FormMethod.Post, new { enctype = "multipart/form-data", sclass = "modal-content" }))-->
+        @using (Ajax.BeginForm("Subir", "Carpeta",new AjaxOptions { HttpMethod = "POST", OnSuccess = "SuccessMessageUpload", UpdateTargetId = "resultTarget" }, new { enctype = "multipart/form-data", @class = "modal-content" }))
+        {
+            <div class="modal-header bg-green-gradient">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-check-circle" aria-hidden="true"></i> Registro de Documentos</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-folder-open-o"></i></span>
+                    <select id="seltfolderupload" name="tidcarpeta" class="form-control select2"></select>
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-hand-o-right"></i></span>
+                    <input type="file" name="archivo" class="filestyle form-control" data-placeholder="Seleccione el documento..." data-size="sm" data-iconName="fa fa-upload" data-buttonText="Elegir Archivo">
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtNewNameFile" name="tdescripcion" type="text" class="form-control" data-size="sm" placeholder="Ingrese una descripción del Archivo" />
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+                    <select id="seltdoc" name="tcodtipodoc" class="form-control select2" data-placeholder="Seleccione el tipo de documento...">
+                    </select>
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                    <select id="seltprop" name="tcodpropietary" class="form-control select2" data-placeholder="Seleccione el propietario..."></select>
+                </div>
+                <div class="form-group input-group">
+                    <div class="input-group date">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input id="fvigdm" name="tfvigenci" type="text" class="form-control" placeholder="Fecha de Vigencia" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success">Cargar Archivo</button>
+            </div>
+        }
+        <!--</div> /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="msgsuccess" class="modal modal-success">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Correcto!</h4>
+            </div>
+            <div class="modal-body">
+                <p>El proceso se ejecuto satisfactoriamente&hellip;</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-right" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="msgerror" class="modal modal-danger">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Validaci&oacute;n</h4>
+            </div>
+            <div class="modal-body">
+                <p>Asegurese de eliminar las sub-carpetas y/o documentos dentro de ellas&hellip;</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-right" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="msgwarning" class="modal modal-warning">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Advertencia!</h4>
+            </div>
+            <div class="modal-body">
+                <p id="printmensaje">One fine body&hellip;</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-right" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(function () {
+
+        //Cargamos todas las carpetas existentes
+        LoadFolderMain();
+
+        $(".dropdown-menu li a").click(function () {
+            var selText = $(this).text();
+            $(this).parents('.btn-group').find('.dropdown-toggle').html(selText + ' <span class="caret"></span>');
+        });
+
+        $("#btnSearch").click(function () {
+            alert($('.btn-select').text() + ", " + $('.btn-select2').text());
+        });
+
+        function BuildTreenodes() {
+            var url = '@Url.Action("GetTreeviewFiles", "Carpeta")';
+            alert(url.toString);
+        }
+
+        $("#btndeletefile").click(function () {
+
+            var name;
+            name = $('#titlecarpeta').text();
+            //name = $('#idcarpeta').text();
+
+            $('#myModalDelete').modal('show');
+            //$('#myModalDelete').find('.modal-title').text(name);
+            $('#tmessage').text(name);
+
+        });
+
+        //Proceso: ELiminar Carpeta
+        $("#btnDeleteFolderOK").click(function () {
+            idFolder = $('#idcarpeta').text();
+            deleteFolder(idFolder);
+        });
+
+        $("#btnAddFolder").click(function () {
+
+            $('#myModalAddFolder').modal('show');
+            $('#myModalAddFolder').on('shown.bs.modal', function () {
+                $("#txtCarpetanombre").focus();
+            });
+
+        });
+
+        $("#btnEditFolder").click(function () {
+
+            var nameFolder;
+            nameFolder = $('#titlecarpeta').text().trim();
+            $('#txtEditCarpetanombre').val(nameFolder);
+            $('#myModalEditFolder').modal('show');
+            $('#myModalEditFolder').on('shown.bs.modal', function () {
+                $("#txtEditCarpetanombre").focus();
+            });
+
+        });
+
+        $("#btnUploadFile").click(function () {
+            var nameFolder;
+            var idFolder;
+
+            nameFolder = $('#titlecarpeta').text();
+            idFolder = $('#idcarpeta').text();
+
+            $('#seltfolderupload').empty();
+            $('#seltfolderupload')
+                    .append($("<option selected></option>")
+                    .attr("value", idFolder)
+                    .text(nameFolder));
+
+            $('#myModalUploadFile').modal('show');
+            $('#myModalUploadFile').on('shown.bs.modal', function () {
+                $("#txtNewNameFile").focus();
+            });
+
+        });
+
+        getAllTipoDocumentos();
+        getAllPropietarios();
+
+        $('#fvigdm').datetimepicker({
+            format: 'DD/MM/YYYY'
+        });
+
+        $("#btnUpdateEditFolder").click(function () {
+            //en este bloque grabaremos la informacion actualizada
+            var nameFolder;
+            var idFolder;
+
+            idFolder = $('#idcarpeta').text();
+            nameFolder = document.getElementById("txtEditCarpetanombre").value;
+
+            updateNameFolder(idFolder, nameFolder);
+        });
+
+        $("#btnSaveFolder").click(function () {
+            var nameFolderChildren;
+            var idFolderMain;
+
+            idFolderMain = $('#idcarpeta').text();
+            nameFolderChildren = document.getElementById("txtCarpetanombre").value;
+
+            createNewFolder(idFolderMain, nameFolderChildren);
+
+        });
+
+    });
+
+    function LoadFolderMain() {
+
+        var defaultData;
+        var url = '@Url.Action("GetTreeviewFiles", "Carpeta")';
+
+        $.getJSON(url, function (data) {
+
+            defaultData = JSON.stringify(data);
+
+            $('#treeview5').treeview({
+                color: "#1C476D",
+                expandIcon: 'glyphicon glyphicon-chevron-right',
+                collapseIcon: 'glyphicon glyphicon-chevron-down',
+                nodeIcon: 'glyphicon glyphicon-folder-open',
+                selectedIcon: 'glyphicon glyphicon-ok',
+                //highlightSelected: false,
+                //selectedColor: "black",
+                //onhoverColor: "GhostWhite",
+                //enableLinks: 'true',
+                data: defaultData,
+                onNodeSelected: function (event, data) {
+
+                    if (data.text.trim() == "ROOT") {
+                        //Eliminar
+                        $("#btndeletefile").removeClass('btn btn-danger');
+                        $("#btndeletefile").addClass('btn btn-danger hide');
+                        //Editar
+                        $("#btnEditFolder").removeClass('btn btn-default');
+                        $("#btnEditFolder").addClass('btn btn-default hide');
+                    }
+                    else {
+                        //Eliminar
+                        $("#btndeletefile").removeClass('btn btn-danger hide');
+                        $("#btndeletefile").addClass('btn btn-danger');
+                        //Editar
+                        $("#btnEditFolder").removeClass('btn btn-default hide');
+                        $("#btnEditFolder").addClass('btn btn-default');
+                    }
+                    $('#divbotonesAccion').removeClass('text-center btn-group-sm hide');
+                    $('#divbotonesAccion').addClass('text-center btn-group-sm show');
+                    $('#idcarpeta').text(data.id);
+                    $('#titlecarpeta').text(data.text);
+                    fnMostrarDetalleDocumentos(data.id);
+                },
+                onNodeUnselected: function (event, node) {
+                    $('#divbotonesAccion').removeClass('text-center btn-group-sm show');
+                    $('#divbotonesAccion').addClass('text-center btn-group-sm hide');
+                    $('#titlecarpeta').text('Seleccione una carpeta...');
+                    $('#mitabla').find('tbody').children().remove();
+                    $('#mitabla').find('tbody').append('<tr><td colspan="4" class="text small text-info">No se encontraron documentos para la selecci&oacute;n actual</td></tr>')
+                }
+            });
+
+        });
+
+    };
+
+    function fnMostrarDetalleDocumentos(id) {
+
+        var url = '@Url.Action("GetAllDocumentosPorCarpeta", "Carpeta",new RouteValueDictionary (new { id="id"}))'.replace("id", id);
+        //var defaultData;
+        var size;
+
+        $.getJSON(url,
+            function(data) {
+                $.ajaxSetup({ cache: false });
+                $('#mitabla').find('tbody').children().remove();
+                size = Object.keys(data).length;
+
+                if (size > 0) {
+                    $.each(data,
+                        function(i, item) {
+                            $('#mitabla')
+                                .find('tbody')
+                                .append('<tr class="text small"><td>' +
+                                    item.nro +
+                                    '</td><td>' +
+                                    item.documento +
+                                    '</td><td>' +
+                                    item.tipoDocumento +
+                                    '</td><td><a href="/Carpeta/Download?code=' +
+                                    item.id +
+                                    '" class="btn btn-xs bg-blue-gradient"><i class="fa fa-download" aria-hidden="true"></i> Descargar</a></td></tr>')
+                        });
+                } else {
+                    $('#mitabla')
+                        .find('tbody')
+                        .append('<tr><td colspan="4" class="text small text-info">No se encontraron documentos para la selecci&oacute;n actual</td></tr>')
+                }
+            });
+    };
+
+    function getAllTipoDocumentos() {
+        var url = '@Url.Action("GetAllTipoDocumentos", "Carpeta")';
+        var size;
+
+        $('#seltdoc').empty();
+
+        $.getJSON(url, function (data) {
+            size = Object.keys(data).length;
+            if (size > 0) {
+                $.each(data, function (i, item) {
+                    $('#seltdoc')
+                        .append($("<option></option>")
+                        .attr("value",item.codigo)
+                        .text(item.descripcion));
+                });
+            }
+            else {
+                $('#seltdoc').removeClass('form-control select2');
+                $('#seltdoc').addClass('form-control select2 text-red');
+                $('#seltdoc')
+                    .append($("<option></option>")
+                    .attr("value",0)
+                    .text("No se han registrado los Tipos de Documentos"));
+            }
+        })
+    };
+
+    function getAllPropietarios() {
+        var url = '@Url.Action("GetAllPropietario", "Carpeta")';
+        var size;
+
+        $('#seltprop').empty();
+
+        $.getJSON(url, function (data) {
+            size = Object.keys(data).length;
+            if (size > 0) {
+                $.each(data, function (i, item) {
+                    $('#seltprop')
+                        .append($("<option></option>")
+                        .attr("value", item.codigo)
+                        .text(item.descripcion));
+                });
+            }
+            else {
+                $('#seltprop').removeClass('form-control select2');
+                $('#seltprop').addClass('form-control select2 text-red');
+                $('#seltprop')
+                    .append($("<option></option>")
+                    .attr("value", 0)
+                    .text("No se han registrado los Tipos propietarios"));
+            }
+        })
+    };
+
+    function SuccessMessageUpload() {
+        alert("Succcess Post");
+    };
+
+    function createNewFolder(idPadre, descripcion) {
+        var url = '@Url.Action("CreateNewFolder", "Carpeta")';
+
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            url: url,
+            data: '{"idFolderPadre":' + idPadre + ',"nameFolder":"' + descripcion + '"}',
+            datatype: 'json',
+            success: function (result) {
+                //si registro correctamente recargamos el arbol de carpetas
+                LoadFolderMain();
+            },
+            error: function (xhr) {
+                alert('Error: ' + xhr.statusText);
+            }
+        });
+    };
+
+    function updateNameFolder(code, value) {
+
+        var url = '@Url.Action("updateNameFolder", "Carpeta")';
+
+        //url = url.replace("id", code);
+        //url = url.replace("desc", value);
+        //alert(url);
+
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            url: url,
+            data: '{"id":"' + code + '","desc":"' + value + '"}',
+            datatype: 'json',
+            success: function (result) {
+                //escribir accion luego de la ejecucion correcta del proceso
+                LoadFolderMain();
+                //value = " " + value;
+                //updateNodeText(value);
+            },
+            error: function (xhr) {
+                //Algun mensaje de error
+                alert('Error: ' + xhr.statusText);
+            },
+            async: true
+        })
+    };
+
+    function deleteFolder(code) {
+        var url = '@Url.Action("deleteFolder", "Carpeta")';
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            url: url,
+            data: '{"id":"' + code + '"}',
+            datatype: 'json',
+            success: function (result) {
+                alert(result);
+                if (result > 0) {
+                    $('#msgsuccess').modal('show');
+                    LoadFolderMain();
+                } else {
+                    $('#msgerror').modal('show');
+                }
+            },
+            error: function (xhr) {
+                //Algun mensaje de error
+                document.getElementById("printmensaje").innerHTML = "Error: " + xhr.statusText;
+                $('#msgwarning').modal('show');
+            },
+            async: true
+        });
+    };
+
+    function updateNodeText(nodoDescripcion) {
+
+        var tituloAntes = $('#titlecarpeta').text().trim();
+        //Actualizamos el titulo de la grilla de documentos
+        $('#titlecarpeta').text(nodoDescripcion);
+        var nodehtml = $('.node-selected').html().replace(tituloAntes, nodoDescripcion);
+
+        //actualizamos el nodo seleccionado
+        $('.node-selected').html(nodehtml);
+        //.html('<span class="indent"></span><span class="indent"></span><span class="icon glyphicon"></span><span class="icon node-icon glyphicon glyphicon-ok"></span> ' + nodoDescripcion);
+    };
+</script>

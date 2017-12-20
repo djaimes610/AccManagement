@@ -1,0 +1,244 @@
+﻿@model IEnumerable<DocumentApp.Models.PropietarioViewModel>
+
+@{
+    ViewBag.Title = "Buscar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<p></p>
+<br />
+<div class="box box-default">
+
+    <div class="box-header with-border">
+        <h3 class="box-title">Propietarios</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+        </div>
+    </div>
+
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    
+                    <p>
+                        <div id="divbotonesAccion" class="text-left btn-group-sm">
+                            <a id="btnAddPropietario" class="btn btn-default" href="#">
+                                <span class="fa fa-user-plus fa-lg"></span>  Nuevo Propietario
+                            </a>
+                        </div>
+                    </p>
+                    
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr class="bg-blue text small">
+                                <th>
+                                    #Nro.
+                                </th>
+                                <th>
+                                    Descripci&oacute;n
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Count() > 0)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr class="text small">
+                                        <td style="width: 10px">
+                                            @Html.DisplayFor(modelItem => item.id)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.descripcion)
+                                        </td>
+                                        <td style="width: 160px">
+                                            <div id="divbotonesAccionGrid" class="text-center btn-group-xs">
+                                                <a class="btn btn-primary btn-flat" href="javascript:void(0);" onclick="jsEdicionelement('@item.codigo','@item.descripcion');">
+                                                    <span class="fa fa-edit fa-lg"></span>  Editar
+                                                </a>
+                                                <a class="btn btn-danger btn-flat" href="javascript:void(0);" onclick="jsDeletelement('@item.codigo','@item.descripcion');">
+                                                    <span class="fa fa-trash-o fa-lg"></span>  Eliminar
+                                                </a>
+                                            </div>
+                                            <!--
+                                            Html.ActionLink("Editar", "Edit", new { id = item.codigo }) |
+                                            Html.ActionLink("Detalle", "Details", new { id = item.codigo }) |
+                                            Html.ActionLink("Eliminar", "Delete", new { id = item.codigo })-->
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="text small text-info">No se encontraron propietarios registrados&hellip;</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            </div>
+    </div>
+
+</div>
+
+<!--MODAL.AGREGAR-PROPIETARIO-->
+<div id="myModalAddPropietario" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-blue-gradient">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-user" aria-hidden="true"></i> Registro de Propietario</h5>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
+                    <input id="txtNombrePropietario" type="text" class="form-control" placeholder="Agregar Nuevo Propietario" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnSavePropietario" class="btn btn-primary" data-dismiss="modal">Registrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--MODAL.EDITAR-PROPIETARIO-->
+<div id="myModalEditPropietario" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-blue-gradient">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-user" aria-hidden="true"></i> Editar Propietario</h5>
+            </div>
+            <div class="modal-body">
+                <div id="idpropie" hidden></div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                    <input id="txtEditPropietario" type="text" class="form-control" placeholder="Editar Propietario" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnUpdatePropietario" class="btn btn-primary" data-dismiss="modal">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--MODAL.ELIMINAR-PROPIETARIO-->
+<div id="myModalDeletePropietario" class="modal fade">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-red-active">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h5 class="modal-title"><i class="fa fa-trash" aria-hidden="true"></i> Alerta!</h5>
+            </div>
+            <div class="modal-body text-center">
+                ¿Esta Seguro de eliminar el propietario?
+                <br />
+                <div id="tdelmsg"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnDeletePropOK" class="btn btn-primary" data-dismiss="modal">Eliminar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<script type="text/javascript">
+
+    var idPropietario = 0;
+
+    $("#btnAddPropietario").click(function () {
+        $("#txtNombrePropietario").val("");
+        $('#myModalAddPropietario').modal('show');
+        $('#myModalAddPropietario').on('shown.bs.modal', function () {
+            $("#txtNombrePropietario").focus();
+        });
+    });
+
+    $("#btnSavePropietario").click(function () {
+
+        var descripcion = document.getElementById("txtNombrePropietario").value;
+        var url = '@Url.Action("Registrar", "Propietario")';
+
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            url: url,
+            data: '{"propietario":"' + descripcion + '"}',
+            datatype: 'json',
+            success: function (result) {
+                //si registro correctamente recargamos la grilla
+            },
+            error: function (xhr) {
+                alert('Error: ' + xhr.statusText);
+            }
+        });
+    });
+
+    function jsEdicionelement(id, descripcion) {
+        //alert(id+descripcion);
+        $('#idpropie').text(id);
+        $('#txtEditPropietario').val(descripcion);
+        $('#myModalEditPropietario').modal('show');
+        $('#myModalEditPropietario').on('shown.bs.modal', function () {
+            $("#txtEditPropietario").focus();
+        });
+    };
+
+    function jsDeletelement(id, descripcion) {
+        idPropietario = id;
+        $('#tdelmsg').text(descripcion);
+        $('#myModalDeletePropietario').modal('show');
+    };
+
+    $("#btnUpdatePropietario").click(function () {
+
+        var codigo = $('#idpropie').text();
+        var glsPropietario = document.getElementById("txtEditPropietario").value;
+        var url = '@Url.Action("Actualizar", "Propietario")';
+
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            url: url,
+            data: '{"code":"' + codigo + '","descripcion":"' + glsPropietario + '"}',
+            datatype: 'json',
+            success: function (result) {
+                //si registro correctamente recargamos la grilla
+            },
+            error: function (xhr) {
+                alert('Error: ' + xhr.statusText);
+            }
+        });
+    });
+
+    $("#btnDeletePropOK").click(function () {
+
+        var url = '@Url.Action("Eliminar", "Propietario")';
+
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            url: url,
+            data: '{"code":"' + idPropietario + '"}',
+            datatype: 'json',
+            success: function (result) {
+                //si registro correctamente recargamos la grilla
+            },
+            error: function (xhr) {
+                alert('Error: ' + xhr.statusText);
+            }
+        });
+    });
+
+</script>

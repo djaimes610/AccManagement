@@ -1,0 +1,36 @@
+/* your styles go here */
+
+/*Eliminar Menus de la IZquierda*/
+
+#side-main-menu li:last-child{
+    display:none; 
+}
+
+#side-admin-menu {
+    display:none;
+}
+
+
+/*Estilo para el modal2 de Lote*/
+
+div#myModal2 > .modal-dialog {
+    max-width: 65% !important;
+}
+
+
+/*Borrar Index*/
+section.statistics.section-padding.section-no-padding-bottom {
+    display:none;
+}
+
+section.updates.section-padding {
+    display:none;
+}
+/*MEDIA QUERYS*/
+@media (max-width: 991px) {
+
+    div#myModal2 > .modal-dialog {
+        max-width: 100% !important;
+    }
+    
+}
